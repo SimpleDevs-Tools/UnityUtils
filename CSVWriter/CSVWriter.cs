@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Unity.Mathematics;
 
 [System.Serializable]
 public class CSVWriter
@@ -18,6 +19,7 @@ public class CSVWriter
     [SerializeField, ReadOnly] private string filePath;
     private StreamWriter eventWriter;
     private List<string> payload = new List<string>();
+    private bool is_active = false;
 
     public bool Initialize() {
         string dname = Application.persistentDataPath;
@@ -41,6 +43,7 @@ public class CSVWriter
             eventWriter.WriteLine(String.Join(',', columns));
         }
 
+        is_active = true;
         return true;
     }
 
@@ -84,6 +87,11 @@ public class CSVWriter
         payload.Add(to_add.y.ToString());
         payload.Add(to_add.z.ToString());
     }
+    public void AddPayload(float3 to_add) {
+        payload.Add(to_add[0].ToString());
+        payload.Add(to_add[1].ToString());
+        payload.Add(to_add[2].ToString());
+    }
     public void AddPayload(Quaternion to_add) {
         AddPayload(to_add.eulerAngles);
     }
@@ -94,7 +102,10 @@ public class CSVWriter
     }
 
     public void Disable() {
-        eventWriter.Flush();
-        eventWriter.Close();
+        if (is_active) {
+            eventWriter.Flush();
+            eventWriter.Close();
+        }
+        is_active = false;
     }
 }
