@@ -144,6 +144,20 @@ namespace Helpers {
         public static bool CheckFileExists(string filePath) {
             return File.Exists(filePath);
         }
+        public static string GetUniqueDirectory(string dirPath) {
+            int counter = 1;
+            string returnDir = dirPath;
+            while(CheckDirectoryExists(returnDir)) {
+                returnDir = $"{dirPath}_{counter}";
+                counter += 1;
+            }
+            return returnDir;
+        }
+        public static string CreateUniqueDirectory(string dirPath) {
+            string returnDir = GetUniqueDirectory(dirPath);
+            Directory.CreateDirectory(returnDir);
+            return returnDir;
+        }
         public static bool DeleteDirectory(string dirPath) {
             if (CheckDirectoryExists(dirPath)) {
                 Directory.Delete(dirPath,true);
@@ -157,6 +171,10 @@ namespace Helpers {
                 return true;
             }
             return false;
+        }
+
+        public static string GetCurrentDateTime(string format = "HH-mm-ss") {
+            return System.DateTime.Now.ToString(format);
         }
         
         public static string ConvertToJSON<T>(T data) {

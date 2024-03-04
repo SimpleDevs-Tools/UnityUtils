@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Unity.Mathematics;
+using Helpers;
 
 [System.Serializable]
 public class CSVWriter
@@ -22,11 +23,12 @@ public class CSVWriter
     private bool is_active = false;
 
     public bool Initialize() {
-        string dname = Application.persistentDataPath;
+        string dname = $"{Application.persistentDataPath}/{Helpers.SaveSystemMethods.GetCurrentDateTime()}";
         if (dirName != null && dirName.Length > 0) {
-            dname = $"Assets/{dirName}";
-            if (!AssetDatabase.IsValidFolder(dname)) dname = AssetDatabase.GUIDToAssetPath(AssetDatabase.CreateFolder("Assets", dirName));
+            dname = $"{Application.persistentDataPath}/{dirName}";
         }
+        Helpers.SaveSystemMethods.CheckOrCreateDirectory(dname);
+
         string fname = (fileName != null && fileName.Length > 0) ? fileName : System.DateTime.Now.ToString("HH-mm-ss");
         filePath = (append_zero_to_filename) ? Path.Combine(dname, fname+"_0.csv") : Path.Combine(dname, fname+".csv");
 
