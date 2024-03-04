@@ -93,6 +93,36 @@ namespace Helpers {
             Array.Copy(array, startIndex, subset, 0, length);
             return subset;
         }
+
+        // [Source: https://forum.unity.com/threads/encoding-vector2-and-vector3-variables-into-single-int-or-float-and-back.448346/]
+        // [Commentor: emotitron]
+        public static int encodeVector3ToInt(Vector3 v) {
+            //Vectors must stay within the -512 to 512 range per axis - no error handling coded here
+            //Add 512 to get numbers into the 0-1024 range rather than -512 to 512 range
+            //Multiply by 10 to save one decimal place from rounding
+            int xcomp = Mathf.RoundToInt((v.x * 10)) + 512;
+            int ycomp = Mathf.RoundToInt((v.y * 10)) + 512;
+            int zcomp = Mathf.RoundToInt((v.z * 10)) + 512;
+            return xcomp + ycomp * 1024 + zcomp * 1048576;
+        }
+        public static Vector3 decodeVector3FromInt(int i) {
+            //Get the leftmost bits first. The fractional remains are the bits to the right.
+            // 1024 is 2 ^ 10 - 1048576 is 2 ^ 20 - just saving some calculation time doing that in advance
+            float z = Mathf.Floor(i / 1048576);
+            float y = Mathf.Floor ((i - z * 1048576) / 1024);
+            float x = (i - y * 1024 - z * 1048576);
+            // subtract 512 to move numbers back into the -512 to 512 range rather than 0 - 1024
+            return new Vector3 ((x - 512) / 10, (y - 512) / 10, (z - 512) / 10);
+        }
+        public static SVector3 decodeSVector3FromInt(int i) {
+            //Get the leftmost bits first. The fractional remains are the bits to the right.
+            // 1024 is 2 ^ 10 - 1048576 is 2 ^ 20 - just saving some calculation time doing that in advance
+            float z = Mathf.Floor(i / 1048576);
+            float y = Mathf.Floor ((i - z * 1048576) / 1024);
+            float x = (i - y * 1024 - z * 1048576);
+            // subtract 512 to move numbers back into the -512 to 512 range rather than 0 - 1024
+            return new SVector3 ((x - 512) / 10, (y - 512) / 10, (z - 512) / 10);
+        }
     }
 
     [System.Serializable]
@@ -113,6 +143,20 @@ namespace Helpers {
         }
         public static bool CheckFileExists(string filePath) {
             return File.Exists(filePath);
+        }
+        public static bool DeleteDirectory(string dirPath) {
+            if (CheckDirectoryExists(dirPath)) {
+                Directory.Delete(dirPath,true);
+                return true;
+            }
+            return false;
+        }
+        public static bool DeleteFile(string filePath) {
+            if (CheckFileExists(filePath)) {
+                File.Delete(filePath);
+                return true;
+            }
+            return false;
         }
         
         public static string ConvertToJSON<T>(T data) {
@@ -155,6 +199,47 @@ namespace Helpers {
         
         public static string[] ReadCSV(TextAsset asset) {
             return asset.text.Split(new string[] {",","\n"}, StringSplitOptions.None);
+        }
+    }
+
+    // Source: https://forum.unity.com/threads/debug-drawarrow.85980/
+    [System.Serializable]
+    public class DrawingMethods {
+        public static void ForGizmos(Vector3 pos, Vector3 direction, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f) {
+            Gizmos.DrawRay(pos, direction);
+
+            Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180+arrowHeadAngle,0) * new Vector3(0,0,1);
+            Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180-arrowHeadAngle,0) * new Vector3(0,0,1);
+            Gizmos.DrawRay(pos + direction, right * arrowHeadLength);
+            Gizmos.DrawRay(pos + direction, left * arrowHeadLength);
+        }
+ 
+        public static void ForGizmos(Vector3 pos, Vector3 direction, Color color, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f) {
+            Gizmos.color = color;
+            Gizmos.DrawRay(pos, direction);
+       
+            Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180+arrowHeadAngle,0) * new Vector3(0,0,1);
+            Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180-arrowHeadAngle,0) * new Vector3(0,0,1);
+            Gizmos.DrawRay(pos + direction, right * arrowHeadLength);
+            Gizmos.DrawRay(pos + direction, left * arrowHeadLength);
+        }
+ 
+        public static void ForDebug(Vector3 pos, Vector3 direction, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f) {
+            Debug.DrawRay(pos, direction);
+       
+            Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180+arrowHeadAngle,0) * new Vector3(0,0,1);
+            Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180-arrowHeadAngle,0) * new Vector3(0,0,1);
+            Debug.DrawRay(pos + direction, right * arrowHeadLength);
+            Debug.DrawRay(pos + direction, left * arrowHeadLength);
+        }
+    
+        public static void ForDebug(Vector3 pos, Vector3 direction, Color color, float arrowHeadLength = 0.25f, float arrowHeadAngle = 20.0f) {
+            Debug.DrawRay(pos, direction, color);
+       
+            Vector3 right = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180+arrowHeadAngle,0) * new Vector3(0,0,1);
+            Vector3 left = Quaternion.LookRotation(direction) * Quaternion.Euler(0,180-arrowHeadAngle,0) * new Vector3(0,0,1);
+            Debug.DrawRay(pos + direction, right * arrowHeadLength, color);
+            Debug.DrawRay(pos + direction, left * arrowHeadLength, color);
         }
     }
 }
