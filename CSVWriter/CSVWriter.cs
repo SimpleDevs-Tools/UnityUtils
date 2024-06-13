@@ -20,7 +20,8 @@ public class CSVWriter
     [SerializeField, ReadOnly] private string filePath;
     private StreamWriter eventWriter;
     private List<string> payload = new List<string>();
-    private bool is_active = false;
+    private bool _is_active = false;
+    public bool is_active => _is_active;
 
     public bool Initialize() {
         string dname = $"{Application.persistentDataPath}/{Helpers.SaveSystemMethods.GetCurrentDateTime()}";
@@ -45,7 +46,7 @@ public class CSVWriter
             eventWriter.WriteLine(String.Join(',', columns));
         }
 
-        is_active = true;
+        _is_active = true;
         return true;
     }
 
@@ -104,10 +105,10 @@ public class CSVWriter
     }
 
     public void Disable() {
-        if (is_active) {
+        if (_is_active) {
             eventWriter.Flush();
             eventWriter.Close();
         }
-        is_active = false;
+        _is_active = false;
     }
 }
