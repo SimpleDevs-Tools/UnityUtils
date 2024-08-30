@@ -17,7 +17,7 @@ public class CSVWriter
     public bool append_zero_to_filename = false;
     public List<string> columns;
 
-    [SerializeField, ReadOnly] private string filePath;
+    [SerializeField, ReadOnlyInsp] private string filePath;
     private StreamWriter eventWriter;
     private List<string> payload = new List<string>();
     private bool _is_active = false;

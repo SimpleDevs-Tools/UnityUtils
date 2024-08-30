@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer( typeof( ReadOnlyAttribute ) )]
-public class ReadOnlyDrawer : PropertyDrawer {
+[CustomPropertyDrawer( typeof( ReadOnlyInspAttribute ) )]
+public class ReadOnlyInspDrawer : PropertyDrawer {
 
     public override float GetPropertyHeight( SerializedProperty property, GUIContent label ) {
         return EditorGUI.GetPropertyHeight( property, label, true );
@@ -16,8 +16,8 @@ public class ReadOnlyDrawer : PropertyDrawer {
 
 }
 
-[CustomPropertyDrawer( typeof( BeginReadOnlyGroupAttribute ) )]
-public class BeginReadOnlyGroupDrawer : DecoratorDrawer {
+[CustomPropertyDrawer( typeof( BeginReadOnlyInspGroupAttribute ) )]
+public class BeginReadOnlyInspGroupDrawer : DecoratorDrawer {
 
     public override float GetHeight() { return 0; }
 
@@ -27,8 +27,8 @@ public class BeginReadOnlyGroupDrawer : DecoratorDrawer {
 
 }
 
-[CustomPropertyDrawer( typeof( EndReadOnlyGroupAttribute ) )]
-public class EndReadOnlyGroupDrawer : DecoratorDrawer {
+[CustomPropertyDrawer( typeof( EndReadOnlyInspGroupAttribute ) )]
+public class EndReadOnlyInspGroupDrawer : DecoratorDrawer {
 
     public override float GetHeight() { return 0; }
 

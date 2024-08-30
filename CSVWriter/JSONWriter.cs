@@ -15,7 +15,7 @@ public class JSONWriter
     public string dirName = null;
     public bool append_zero_to_filename = false;
 
-    [SerializeField, ReadOnly] private string filePath;
+    [SerializeField, ReadOnlyInsp] private string filePath;
     private StreamWriter eventWriter;
     private List<string> payload = new List<string>();
     private bool is_active = false;
