@@ -42,7 +42,7 @@ public class CSVWriter
         eventWriter = new StreamWriter(new FileStream(filePath, FileMode.Create), Encoding.UTF8);
         // Header Line, if any columns are added to `columns`
         if (columns.Count > 0) {
-            if (writeUnixTime) columns.Add("unix_ms");
+            if (writeUnixTime) columns.Insert(0,"unix_ms");
             eventWriter.WriteLine(String.Join(',', columns));
         }
 
