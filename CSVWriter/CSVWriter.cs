@@ -98,6 +98,12 @@ public class CSVWriter
     public void AddPayload(Quaternion to_add) {
         AddPayload(to_add.eulerAngles);
     }
+    public void AddPayload(List<string> to_add) {
+        foreach(string a in to_add) payload.Add(a);
+    }
+    public void AddPayload(string[] to_add) {
+        foreach(string a in to_add) payload.Add(a);
+    }
 
     public static long GetUnixTime() {
         DateTime currentTime = DateTime.UtcNow;
