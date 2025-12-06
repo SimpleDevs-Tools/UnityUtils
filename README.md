@@ -55,3 +55,17 @@ The existing list of serialized equivalents of primitive Unity classes are:
 * `RaycastHit` => `SRaycastHit`
 
 To use these serialized equivalents, you must import the namespace `using SerializableTypes`.
+
+## Additive Scene Manager
+
+Included in this package is an `AdditiveSceneManager.cs` component. This component is a special helper to enable ADDITIVE scene management. I.E. allows you to load and unload scenes on top of another existing, single scene. Helpful for situations where you may want singleton logic at a scene level, by containing major components in the base scene and only switching out certain content dynamically.
+
+### Usage 
+
+Installation is really simple: just add `AdditiveSceneManager.cs` to any GameObject in your base scene, and populate the `Scenes` list with all the additive scenes.
+
+During runtime, if you are in the editor, you can debug how additive scenes load in via the Inspector; you can load and unload your additive scenes via some UI buttons we've added. You can also call the following functions to control loading and unloading:
+
+- `LoadScene(string scene_name, LoadSceneMode mode = LoadSceneMode.Additive)`: Loads a scene based on a string query. You CAN technically use this to load single scenes via the 2nd parameter, but this is not the intended function of this manager. **Only loads in scenes added to its `Scenes` list; doesn't control any scenes NOT added to that list.
+- `UnloadScene(string scene_name)`: Unloads a scene based on a string query. Only unloads a scene if 1) it's been added to the `Scenes` list of this manager, and 2) if it's loaded already. Doesn't do anything if the queried scene is unloaded already.
+- `QuerySceneLoaded(string scene_name)`: You can check if a scene has been additively loaded from this manager using this function. Returns a boolean indicating so.
