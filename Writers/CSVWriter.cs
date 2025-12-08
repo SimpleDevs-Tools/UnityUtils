@@ -39,11 +39,15 @@ public class CSVWriter
             counter++;
         }
 
+        // prepare columns
+        List<string> _columns = new List<string>(columns);
+
         eventWriter = new StreamWriter(new FileStream(filePath, FileMode.Create), Encoding.UTF8);
+        
         // Header Line, if any columns are added to `columns`
-        if (columns.Count > 0) {
-            if (writeUnixTime) columns.Insert(0,"unix_ms");
-            eventWriter.WriteLine(String.Join(',', columns));
+        if (_columns.Count > 0) {
+            if (writeUnixTime) _columns.Insert(0,"unix_ms");
+            eventWriter.WriteLine(String.Join(',', _columns));
         }
 
         _is_active = true;
@@ -53,7 +57,7 @@ public class CSVWriter
 
     public bool WriteLine() {
         if (payload.Count == 0) return false;
-        WriteLine(String.Join(",",payload));
+        WriteLine(String.Join(",",payload), writeUnixTime);
         payload = new List<string>();
         return true;
     }
