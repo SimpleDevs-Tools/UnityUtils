@@ -1,11 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class FrameCount : MonoBehaviour
 {
 
     public static FrameCount Instance;
+
+    public enum TextboxWriteType { FrameCount, FPS, SmoothFPS }
+
+    [System.Serializable]
+    public class Textbox
+    {
+        public TextMeshProUGUI textbox;
+        public TextboxWriteType write_type;
+    }
     
     [Header("=== Calculated (Read-Only) ===")]
     [Tooltip("The raw frame number of the current frame. Wil always increment from 0 at the start of the scene.")]
@@ -19,6 +29,8 @@ public class FrameCount : MonoBehaviour
     [Header("=== Settings ===")]
     [Range(0f,1f), Tooltip("The ratio for calculating the smoothed FPS. 1 = focus only on raw FPS on the current frame, 0 = focus only on the previous FPS of the previous frame.")]
     public float smoothed_ratio = 0.75f;
+    [Tooltip("Which textboxes should this write to?")]
+    public Textbox[] textboxes;
 
     // Outputs readable to other external scripts    
     public int frame_count => _frame_count;
@@ -34,6 +46,20 @@ public class FrameCount : MonoBehaviour
         _fps = 1f / Time.unscaledDeltaTime;
         _smoothed_fps = _prev_fps * (1f-smoothed_ratio) + _fps * smoothed_ratio;
         _prev_fps = _smoothed_fps;
+        foreach(Textbox t in textboxes) {
+            switch(t.write_type)
+            {
+                case TextboxWriteType.FrameCount:
+                    t.textbox.text = _frame_count.ToString();
+                    break;
+                case TextboxWriteType.FPS:
+                    t.textbox.text = _fps.ToString();
+                    break;
+                case TextboxWriteType.SmoothFPS:
+                    t.textbox.text = _smoothed_fps.ToString();
+                    break;
+            }
+        }
 
     }
     

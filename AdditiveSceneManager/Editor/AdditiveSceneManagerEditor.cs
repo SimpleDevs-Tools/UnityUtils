@@ -18,22 +18,22 @@ public class AdditiveSceneManagerEditor : Editor
 
         // Render controls for each scene
         EditorGUILayout.LabelField("=== Scene Controls ===", EditorStyles.boldLabel);
-        foreach(Object s in manager.scenes) SceneButtons(s);
+        foreach(string s in manager.scene_names) SceneButtons(s);
     }
 
-    public void SceneButtons(Object s) {
+    public void SceneButtons(string s) {
 
         // Query if scene is active
-        bool sceneActive = manager.QuerySceneLoaded(s.name);
+        bool sceneActive = manager.QuerySceneLoaded(s);
 
         // Start a horizontal group for the buttons
         GUILayout.BeginHorizontal();
 
         GUI.enabled = !sceneActive;
-        if (GUILayout.Button($"Load \"{s.name}\"")) manager.LoadScene(s.name);
+        if (GUILayout.Button($"Load \"{s}\"")) manager.LoadScene(s);
         GUI.enabled = sceneActive;
         GUILayout.Space(5);
-        if (GUILayout.Button($"Unload \"{s.name}\"")) manager.UnloadScene(s.name);
+        if (GUILayout.Button($"Unload \"{s}\"")) manager.UnloadScene(s);
         GUI.enabled = true;
 
         // End the horizontal group
