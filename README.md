@@ -56,6 +56,90 @@ The existing list of serialized equivalents of primitive Unity classes are:
 
 To use these serialized equivalents, you must import the namespace `using SerializableTypes`.
 
+## Writers
+
+These three contain helper components for writing data into JSON, CSV, or plain text (more on the latter later). Out of these, the two most important are the `CSVWriter` and `LogWriter` components.
+
+### CSVWriter
+
+Rather than a GameObject component, this script is a class variable. It can be referenced just like `float` or `int` in any other GameObject component, such as:
+
+```csharp
+
+public class AnyComponent : MonoBehaviour
+{
+	// ... other variables
+	
+	public CSVWriter writer;
+
+	// ...
+
+	void Start() {
+		// MUST BE CALLED to start your writer
+		// You must also have written out your list of columns in the inspector first.
+		writer.Initialize();
+	}
+
+	void Update() {
+		if (!writer.is_active) return;				// You can double-check if your writer is initialized
+
+													// Let's say you want to write a four-column CSV
+		writer.AddPayload("Position");				// Adds one column to the current row
+		writer.AddPayload(transform.position);		// Adds three columns to the current row
+		writer.Writeline();							// Appends the current row, resets the writer for the next row.
+	}
+
+	void OnDestroy() {
+		// You must CLOSE your writer to disable the `StreamWriter` this component is based on/
+		// Failure to do so may lead to overflow issues and cause game crashes.
+		if (writer.is_active) {
+			writer.Disable();
+		}
+	}
+
+```
+
+The purpose of this class is to allow you to 
+This class' properties are as follows:
+
+|Property|Type|Visibility|Description|
+|:-|:-|:-|:-|
+|`fileName`|`string`|`public`|The file name of the output file (excluding extension)|
+|`dirName`|`string`|`public`|The directory relative to `Application.persistentDataPath`. If unset, defaults to a datetime directory|
+|`writeUnixTime`|`bool`|`public`|If set, the writer will **prepend** an extra column specifically for recording your system's UNIX timestamp every time it writes a new row. This is an automated process and you do not need to manually add a unix timestamp column inside of `columns`.|
+|`append_zero_to_filename`|`bool`|`public`|If creating the file for the first time, simply appends "_0` at the end of the filename. This helps with some conformity if you are writing multiple times; every time a file with the same output path is detected, it will append a number to the end to prevent overwriting the original file|
+|`columns`|`List<string>`|`public`|The columns of the outputted CSV file. `writeUnixTime` does NOT mutate this list, and there is no need to manually create a column specifically for unix milliseconds if `writeUnixTime` is set to `true`|
+
+The `columns` list is a bit unintuitive, so **PLEASE READ THIS SECTION BEFORE USING**
+
+<details>
+<summary><strong>How to use <code>columns</code> & accepted variable types</strong></summary>
+
+Each column represents a value that is expected to be serializable into `string` format. Native `int`, `float`, and `string` will work fine. The problem comes with non-serializables - usually Unity-specific classes - such as `Vector3` or `Quaternion`. To circumvent this, we separate each unique value into their own column; for example, a `Vector3` should take up **3** columns in your `columns` list. Ideally, you would use column names such as "x", "y", and "z".
+
+|Accepted Tyoe|Number of Columns|Notes|
+|:-|:-|:-|
+|`string`|1||
+|`int`|1||
+|`float`|1||
+|`long`|1||
+|`Vector3`|3||
+|`float3`|3|Comes from Unity's "Mathematics" package|
+|`Quaternion`|3|Converts the Quaternion into Euler Angles, which is a `Vector3` type|
+|`List<string>`|Length of the `List`|Can be used if you've already serialized and collected your values into `string` types|
+|`string[]`|Count of the array|Can be used if you've already serialized and collected your values into `string` types|
+
+</details>
+
+
+### LogWriter
+
+This component, unlike `CSVWriter`, is an actual GameObject component that you must add to any GameObject in your scene. This component adds a listener to Unity's logging system and allows you to print out the log statements into a completely separate text file. Unlike `CSVWriter` as well, you only have two public variables you can modify via Insepctor:
+
+- `dirName`: The directory (relative to Persistent Path) that the text file is saved in. If left empty, will default to a datetime folder name.
+- `kChars`: The character limit per line of the log. can be used to cut off severely long messages. `700` is the recommended limit here.
+
+
 ## Frame Count
 
 The `FrameCount.cs` component helps you gain access to the following details about your game:
