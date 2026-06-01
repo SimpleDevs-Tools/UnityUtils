@@ -16,9 +16,8 @@ public class JSONWriter
     public bool append_zero_to_filename = false;
 
     [SerializeField, ReadOnlyInsp] private string filePath;
-    private StreamWriter eventWriter;
-    private List<string> payload = new List<string>();
-    private bool is_active = false;
+    private bool _is_active = false;
+    public bool is_active => _is_active;
 
     public bool Initialize() {
         string dname = $"{Application.persistentDataPath}/{Helpers.SaveSystemMethods.GetCurrentDateTime()}";
@@ -28,15 +27,15 @@ public class JSONWriter
         Helpers.SaveSystemMethods.CheckOrCreateDirectory(dname);
 
         string fname = (fileName != null && fileName.Length > 0) ? fileName : System.DateTime.Now.ToString("HH-mm-ss");
-        filePath = (append_zero_to_filename) ? Path.Combine(dname, fname+"_0.csv") : Path.Combine(dname, fname+".csv");
+        filePath = (append_zero_to_filename) ? Path.Combine(dname, fname+"_0.json") : Path.Combine(dname, fname+".json");
 
         int counter = 1;
         while(File.Exists(filePath)) {
-            filePath = Path.Combine(dname, fname+$"_{counter}.csv");
+            filePath = Path.Combine(dname, fname+$"_{counter}.json");
             counter++;
         }
 
-        is_active = true;
+        _is_active = true;
         return true;
     }
 
@@ -49,13 +48,13 @@ public class JSONWriter
     }
     
     public bool SaveJSON(string json) {
-        if (!is_active) return false;
+        if (!_is_active) return false;
         if (filePath.EndsWith(".json")) File.WriteAllText(filePath, json);
         else File.WriteAllText(filePath + ".json", json);
         return true;
     }
     public bool SaveJSON<T>(T data) {
-        if (!is_active) return false;
+        if (!_is_active) return false;
         string json = ConvertToJSON<T>(data);
         if (filePath.EndsWith(".json")) File.WriteAllText(filePath, json);
         else File.WriteAllText(filePath + ".json", json);
@@ -63,7 +62,7 @@ public class JSONWriter
     }
     
     public bool LoadJSON<T>(out T output) {
-        if (!is_active) {
+        if (!_is_active) {
             output = default(T);
             return false;
         }
@@ -79,6 +78,6 @@ public class JSONWriter
     }
 
     public void Disable() {
-        is_active = false;
+        _is_active = false;
     }
 }
