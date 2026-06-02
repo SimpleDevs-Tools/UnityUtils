@@ -11,7 +11,7 @@ public class AdditiveSceneManager : MonoBehaviour
     public class Ref
     {
         public string key;
-        public GameObject reference;
+        public Object reference;
     }
 
     // Global instance
@@ -29,7 +29,7 @@ public class AdditiveSceneManager : MonoBehaviour
 
     [Header("=== Reference Management ===")]
     public List<Ref> references = new List<Ref>();
-    private Dictionary<string, GameObject> refDict;
+    private Dictionary<string, Object> refDict;
 
     [Header("=== Callbacks ===")]
     public UnityEvent onSceneLoadedCallback;
@@ -62,7 +62,7 @@ public class AdditiveSceneManager : MonoBehaviour
 
     private void InitializeRefs()
     {
-        refDict = new Dictionary<string, GameObject>();
+        refDict = new Dictionary<string, Object>();
         foreach(Ref r in references) refDict.Add(r.key, r.reference);
     }
 
@@ -120,7 +120,12 @@ public class AdditiveSceneManager : MonoBehaviour
     public bool TryGetRef(string query, out GameObject g)
     {
         bool found = refDict.ContainsKey(query);
-        g = found ? refDict[query] : null;
+        g = found ? refDict[query] as GameObject : null;
+        return found;
+    }
+    public bool TryGetRef<T>(string query, out T g) where T : class {
+        bool found = refDict.ContainsKey(query);
+        g = found ? refDict[query] as T : null;
         return found;
     }
 
