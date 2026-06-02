@@ -123,11 +123,6 @@ public class AdditiveSceneManager : MonoBehaviour
         g = found ? refDict[query] as GameObject : null;
         return found;
     }
-    public bool TryGetRef<T>(string query, out T g) where T : class {
-        bool found = refDict.ContainsKey(query);
-        g = found ? refDict[query] as T : null;
-        return found;
-    }
 
     void OnDestroy() {
         SceneManager.sceneLoaded -= OnSceneLoaded;
