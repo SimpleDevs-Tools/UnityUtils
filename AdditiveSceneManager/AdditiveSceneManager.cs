@@ -32,8 +32,8 @@ public class AdditiveSceneManager : MonoBehaviour
     private Dictionary<string, Object> refDict;
 
     [Header("=== Callbacks ===")]
-    public UnityEvent onSceneLoadedCallback;
-    public UnityEvent onSceneUnloadedCallback;
+    public UnityEvent<string> onSceneLoadedCallback;
+    public UnityEvent<string> onSceneUnloadedCallback;
 
     #if UNITY_EDITOR
     private void OnValidate()
@@ -104,13 +104,13 @@ public class AdditiveSceneManager : MonoBehaviour
         SceneManager.SetActiveScene(scene);
         if (!activeScenes.Contains(scene.name)) activeScenes.Add(scene.name);
         Debug.Log($"Scene \"{scene.name}\" loaded!");
-        onSceneLoadedCallback?.Invoke();
+        onSceneLoadedCallback?.Invoke(scene.name);
     }
 
     public void OnSceneUnloaded(Scene scene) {
         if (activeScenes.Contains(scene.name)) activeScenes.Remove(scene.name);
         Debug.Log($"Scene \"scene.name\" unloaded!");
-        onSceneUnloadedCallback?.Invoke();
+        onSceneUnloadedCallback?.Invoke(scene.name);
     }
 
     public bool QuerySceneLoaded(string query) {
