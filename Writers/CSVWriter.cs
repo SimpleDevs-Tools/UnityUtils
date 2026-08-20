@@ -114,6 +114,10 @@ public class CSVWriter
         return ((DateTimeOffset)currentTime).ToUnixTimeMilliseconds();
     }
 
+    public string GetLastFilepath() {
+        return filePath;
+    }
+
     public void Disable() {
         if (_is_active) {
             eventWriter.Flush();
